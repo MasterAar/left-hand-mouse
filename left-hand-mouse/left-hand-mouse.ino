@@ -1,24 +1,34 @@
 #include <HID-Project.h>
 
-const int HALL_EFFECT = 2;
-int ticks = 0;
+const int SEN_0 = 2;
+const int SEN_1 = 3;
+int currentVal = 0;
+int typedValLen 3760
 
 void setup() {
   Serial.begin(9600);
-  Consumer.begin();
+  Keyboard.begin();
+  //Consumer.begin();
   
-  pinMode(HALL_EFFECT, INPUT);
-  attachInterrupt(digitalPinToInterrupt(HALL_EFFECT), tick, FALLING);
+  pinMode(SEN_0, INPUT);
+  //pinMode(SEN_1, INPUT);
+  attachInterrupt(digitalPinToInterrupt(SEN_0), tick, FALLING);
 }
 
 void loop() {
-  Serial.println("Waiting for input | " + String(ticks) + " | " + digitalRead(HALL_EFFECT));
-  delay(100);
+  Serial.println(currentVal + " | " + typedValLen);
 }
 
 void tick() {
-  Serial.println("Tick, tock, I'm a clock | " + String(++ticks));
-  if(ticks % 2 == 0) Consumer.write(MEDIA_VOL_UP);
-  else Consumer.write(MEDIA_VOL_DOWN);
+  Serial.println("New value: " + String(currentVal));
+  currentVal += 10;
+
+  for(int i = 0; i < typedValLen; i++) {
+    Keyboard.write(KEY_BACKSPACE);
+    Serial.println("deleting");
+  }
+
+  Keyboard.print(String(currentVal));
+  typedValLen = String(currentVal).length();
 }
 
